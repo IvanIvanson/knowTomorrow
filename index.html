@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Дневник дня</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <h1>📊 Оценка дня</h1>
+    </header>
+    
+    <main class="main-content">
+      <section class="input-section card">
+        <h2>Сегодняшний день</h2>
+        <div class="category" id="categories"></div>
+        <button id="save" class="btn-primary">Сохранить день</button>
+      </section>
+
+      <section class="stats card">
+        <h2>Статистика</h2>
+        <div class="charts">
+          <div class="chart-container">
+            <canvas id="dayChart"></canvas>
+          </div>
+          <div class="chart-container">
+            <canvas id="weekChart"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <section class="history card">
+        <h2>История</h2>
+        <div class="table-responsive">
+          <table id="historyTable">
+            <thead>
+              <tr>
+                <th>Дата</th>
+                <th>Оценка</th>
+                <th>Статус</th>
+                <th>Действия</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Модальное окно -->
+  <div id="editModal" class="modal">
+    <div class="modal-content card">
+      <button id="close" class="close">&times;</button>
+      <h2>Редактирование дня</h2>
+      <div id="editForm" class="modal-form"></div>
+      <div class="modal-actions">
+        <button id="saveEdit" class="btn-success">Сохранить</button>
+        <button id="deleteDay" class="btn-danger">Удалить</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>
