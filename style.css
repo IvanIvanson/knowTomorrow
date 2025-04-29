@@ -33,6 +33,6 @@ body {
     height: 250px;
   }
   #historyChart {
-    min-width: 500px;
+    min-width: 340px;
   }
 }
