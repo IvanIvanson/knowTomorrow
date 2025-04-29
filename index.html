@@ -9,7 +9,7 @@
 </head>
 <body>
   <div class="container">
-    <h1 class="my-4">📅 Оценка дня</h1>
+    <h1 class="my-4">📅 Дневник настроения</h1>
     
     <!-- Опросник -->
     <div id="questionnaire" class="card mb-4">
@@ -29,8 +29,25 @@
         <h2 class="h5 mb-0">Статистика</h2>
       </div>
       <div class="card-body">
-        <div class="chart-container">
-          <canvas id="historyChart"></canvas>
+        <ul class="nav nav-tabs" id="chartTabs" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="line-tab" data-bs-toggle="tab" data-bs-target="#lineChartTab" type="button" role="tab">История</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="radar-tab" data-bs-toggle="tab" data-bs-target="#radarChartTab" type="button" role="tab">Анализ</button>
+          </li>
+        </ul>
+        <div class="tab-content" id="chartTabsContent">
+          <div class="tab-pane fade show active" id="lineChartTab" role="tabpanel">
+            <div class="chart-container">
+              <canvas id="historyChart"></canvas>
+            </div>
+          </div>
+          <div class="tab-pane fade" id="radarChartTab" role="tabpanel">
+            <div class="chart-container">
+              <canvas id="radarChart"></canvas>
+            </div>
+          </div>
         </div>
       </div>
     </div>

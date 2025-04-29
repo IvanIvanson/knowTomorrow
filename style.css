@@ -11,13 +11,28 @@ body {
 }
 .chart-container {
   width: 100%;
-  height: 400px;
+  height: 300px;
   overflow-x: auto;
+  margin-bottom: 20px;
 }
 #historyChart {
-  min-width: 800px;
+  min-width: 600px;
+}
+#radarChart {
+  min-width: 300px;
 }
 .rating-text {
   font-weight: bold;
   margin-top: 5px;
+}
+.chart-wrapper {
+  position: relative;
+}
+@media (max-width: 500px) {
+  .chart-container {
+    height: 250px;
+  }
+  #historyChart {
+    min-width: 500px;
+  }
 }
