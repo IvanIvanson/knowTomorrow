@@ -1,5 +1,5 @@
- // Конфигурация вопросов
- const questionsConfig = [
+// Конфигурация вопросов
+const questionsConfig = [
   { id: 'health', text: 'Самочувствие (0-10)' },
   { id: 'home', text: 'Отношение дома (0-10)' },
   { id: 'work', text: 'Отношение на работе (0-10)', skipOnWeekend: true },
@@ -17,6 +17,7 @@ let historyChart = null;
 let radarChart = null;
 let dateModal = null;
 let isAddingMissedDay = false;
+let predictionModel = null;
 
 // Инициализация при загрузке
 document.addEventListener('DOMContentLoaded', function() {
@@ -28,6 +29,7 @@ document.addEventListener('DOMContentLoaded', function() {
   
   document.getElementById('addMissedDay').addEventListener('click', showDateModal);
   document.getElementById('confirmDate').addEventListener('click', startMissedDayQuestionnaire);
+  document.getElementById('predictBtn').addEventListener('click', predictNextDay);
   
   // Обновляем радар при переключении вкладок
   const radarTab = document.getElementById('radar-tab');
@@ -340,4 +342,162 @@ function updateRadarChart() {
       }
     }
   });
+}
+
+// Функции для предсказания следующего дня
+async function predictNextDay() {
+  if (daysData.length < 7) {
+    alert('Для прогнозирования необходимо как минимум 7 дней данных');
+    return;
+  }
+
+  document.getElementById('predictionLoading').style.display = 'block';
+  document.getElementById('predictBtn').disabled = true;
+  document.getElementById('predictionResult').style.display = 'none';
+
+  try {
+    // Подготовка данных
+    const preparedData = prepareDataForPrediction();
+    
+    // Создаем и обучаем модель
+    const model = await createModel();
+    await trainModel(model, preparedData);
+    
+    // Делаем предсказание
+    const prediction = await makePrediction(model, preparedData);
+    
+    // Отображаем результат
+    showPredictionResult(prediction);
+  } catch (error) {
+    console.error('Ошибка при прогнозировании:', error);
+    alert('Произошла ошибка при прогнозировании. Пожалуйста, попробуйте позже.');
+  } finally {
+    document.getElementById('predictionLoading').style.display = 'none';
+    document.getElementById('predictBtn').disabled = false;
+  }
+}
+
+function prepareDataForPrediction() {
+  // Сортируем данные по дате
+  const sortedData = [...daysData].sort((a, b) => new Date(a.date) - new Date(b.date));
+  
+  // Подготавливаем данные для обучения
+  const sequences = [];
+  const labels = [];
+  
+  // Используем окно из 7 дней для предсказания следующего дня
+  const windowSize = 7;
+  
+  for (let i = windowSize; i < sortedData.length; i++) {
+    const sequence = [];
+    for (let j = i - windowSize; j < i; j++) {
+      const scores = Object.values(sortedData[j].scores).filter(v => v !== null);
+      const avgScore = scores.length > 0 ? (scores.reduce((a, b) => a + b, 0) / scores.length) : 0;
+      sequence.push(avgScore);
+    }
+    
+    const currentScores = Object.values(sortedData[i].scores).filter(v => v !== null);
+    const currentAvg = currentScores.length > 0 ? (currentScores.reduce((a, b) => a + b, 0) / currentScores.length) : 0;
+    
+    sequences.push(sequence);
+    labels.push(currentAvg);
+  }
+  
+  // Нормализуем данные (приводим к диапазону 0-1)
+  const normalizedSequences = sequences.map(seq => seq.map(val => val / 10));
+  const normalizedLabels = labels.map(val => val / 10);
+  
+  return {
+    sequences: normalizedSequences,
+    labels: normalizedLabels,
+    originalSequences: sequences,
+    originalLabels: labels
+  };
+}
+
+async function createModel() {
+  const model = tf.sequential();
+  
+  model.add(tf.layers.dense({
+    units: 32,
+    activation: 'relu',
+    inputShape: [7] // 7 предыдущих дней
+  }));
+  
+  model.add(tf.layers.dense({
+    units: 16,
+    activation: 'relu'
+  }));
+  
+  model.add(tf.layers.dense({
+    units: 1, // Предсказываем одно значение - среднюю оценку следующего дня
+    activation: 'sigmoid' // Ограничиваем выход между 0 и 1
+  }));
+  
+  model.compile({
+    optimizer: tf.train.adam(0.001),
+    loss: 'meanSquaredError',
+    metrics: ['mae']
+  });
+  
+  return model;
+}
+
+async function trainModel(model, data) {
+  const xs = tf.tensor2d(data.sequences);
+  const ys = tf.tensor1d(data.labels);
+  
+  await model.fit(xs, ys, {
+    epochs: 100,
+    batchSize: 2,
+    validationSplit: 0.2,
+    verbose: 0
+  });
+  
+  // Очищаем тензоры после использования
+  xs.dispose();
+  ys.dispose();
+}
+
+async function makePrediction(model, data) {
+  // Берем последние 7 дней для предсказания следующего
+  const lastSequence = data.originalSequences.slice(-1)[0];
+  const normalizedSequence = lastSequence.map(val => val / 10);
+  
+  const input = tf.tensor2d([normalizedSequence]);
+  const prediction = model.predict(input);
+  const predictionValue = (await prediction.data())[0] * 10; // Возвращаем к шкале 0-10
+  
+  // Очищаем тензоры после использования
+  input.dispose();
+  prediction.dispose();
+  
+  return {
+    predictedValue: predictionValue,
+    lastValues: lastSequence
+  };
+}
+
+function showPredictionResult(prediction) {
+  const resultElement = document.getElementById('predictionResult');
+  const valueElement = resultElement.querySelector('.prediction-value');
+  const textElement = resultElement.querySelector('.prediction-text');
+  
+  const roundedValue = Math.round(prediction.predictedValue * 10) / 10;
+  valueElement.textContent = `Прогноз: ${roundedValue}`;
+  
+  let trend = '';
+  const lastAvg = prediction.lastValues.reduce((a, b) => a + b, 0) / prediction.lastValues.length;
+  
+  if (roundedValue > lastAvg + 1) {
+    trend = 'Ожидается улучшение настроения';
+  } else if (roundedValue < lastAvg - 1) {
+    trend = 'Ожидается ухудшение настроения';
+  } else {
+    trend = 'Ожидается стабильное настроение';
+  }
+  
+  textElement.textContent = `${trend} (последние оценки: ${prediction.lastValues.map(v => v.toFixed(1)).join(', ')})`;
+  
+  resultElement.style.display = 'block';
 }

@@ -31,6 +31,21 @@ body {
   font-size: 14px;
   padding: 8px 12px;
 }
+#predictionResult {
+  padding: 15px;
+  margin-top: 15px;
+  border-radius: 5px;
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+}
+.prediction-value {
+  font-size: 24px;
+  font-weight: bold;
+  color: #0d6efd;
+}
+.prediction-text {
+  margin-top: 5px;
+}
 @media (max-width: 375px) {
   .chart-container {
     height: 250px;
