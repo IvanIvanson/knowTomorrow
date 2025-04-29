@@ -1,9 +1,9 @@
 body {
-  padding: 20px;
+  padding: 15px;
   background-color: #f8f9fa;
 }
 .question-card {
-  margin-bottom: 20px;
+  margin-bottom: 15px;
   display: none;
 }
 .active-question {
@@ -13,26 +13,36 @@ body {
   width: 100%;
   height: 300px;
   overflow-x: auto;
-  margin-bottom: 20px;
+  margin-bottom: 15px;
 }
 #historyChart {
-  min-width: 600px;
+  min-width: 100%;
 }
 #radarChart {
-  min-width: 300px;
+  min-width: 100%;
+  min-height: 300px;
 }
 .rating-text {
   font-weight: bold;
   margin-top: 5px;
+  font-size: 14px;
 }
-.chart-wrapper {
-  position: relative;
+.nav-tabs .nav-link {
+  font-size: 14px;
+  padding: 8px 12px;
 }
-@media (max-width: 500px) {
+@media (max-width: 375px) {
   .chart-container {
     height: 250px;
   }
-  #historyChart {
-    min-width: 340px;
+  #radarChart {
+    min-height: 250px;
+  }
+  .question-card h3 {
+    font-size: 16px;
+  }
+  .btn {
+    font-size: 14px;
+    padding: 6px 10px;
   }
 }

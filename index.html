@@ -3,32 +3,34 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Дневник настроения</title>
+  <title>Оценка дня</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="container">
-    <h1 class="my-4">📅 Дневник настроения</h1>
+    <h1 class="my-3">📅 Оценка дня</h1>
     
     <!-- Опросник -->
-    <div id="questionnaire" class="card mb-4">
+    <div id="questionnaire" class="card mb-3">
       <div class="card-header">
         <h2 id="currentDate" class="h5 mb-0"></h2>
       </div>
       <div class="card-body">
         <div id="questionContainer"></div>
-        <button id="prevQuestion" class="btn btn-secondary mt-3 me-2">Назад</button>
-        <button id="nextQuestion" class="btn btn-primary mt-3">Далее</button>
+        <div class="d-flex justify-content-between mt-3">
+          <button id="prevQuestion" class="btn btn-secondary me-2">Назад</button>
+          <button id="nextQuestion" class="btn btn-primary">Далее</button>
+        </div>
       </div>
     </div>
 
     <!-- Графики -->
-    <div class="card mb-4">
+    <div class="card mb-3">
       <div class="card-header">
         <h2 class="h5 mb-0">Статистика</h2>
       </div>
-      <div class="card-body">
+      <div class="card-body p-0">
         <ul class="nav nav-tabs" id="chartTabs" role="tablist">
           <li class="nav-item" role="presentation">
             <button class="nav-link active" id="line-tab" data-bs-toggle="tab" data-bs-target="#lineChartTab" type="button" role="tab">История</button>
@@ -37,7 +39,7 @@
             <button class="nav-link" id="radar-tab" data-bs-toggle="tab" data-bs-target="#radarChartTab" type="button" role="tab">Анализ</button>
           </li>
         </ul>
-        <div class="tab-content" id="chartTabsContent">
+        <div class="tab-content p-3" id="chartTabsContent">
           <div class="tab-pane fade show active" id="lineChartTab" role="tabpanel">
             <div class="chart-container">
               <canvas id="historyChart"></canvas>
@@ -58,13 +60,13 @@
         <h2 class="h5 mb-0">История оценок</h2>
         <button id="addMissedDay" class="btn btn-sm btn-outline-primary">Добавить пропущенный день</button>
       </div>
-      <div class="card-body">
+      <div class="card-body p-0">
         <div class="table-responsive">
-          <table class="table table-hover" id="historyTable">
+          <table class="table table-hover mb-0" id="historyTable">
             <thead>
               <tr>
                 <th>Дата</th>
-                <th>Средняя оценка</th>
+                <th>Оценка</th>
                 <th>Статус</th>
                 <th>Действия</th>
               </tr>
